@@ -185,7 +185,7 @@ $('csv').addEventListener('click',()=>{
 });
 
 // Conserva la URL de Apps Script en el navegador para no pegarla cada vez.
-$('scriptUrl').value = localStorage.getItem('pbs_sheet_endpoint') || '';
+$('scriptUrl').value = localStorage.getItem('pbs_sheet_endpoint') || 'https://script.google.com/macros/s/AKfycbzv4ERKwU3MbBx2REIcd559uW41WXwTjThBATe8NzDL0NN7yK0gNmLvxmEasaz-5Bqm6g/exec';
 $('scriptUrl').addEventListener('change', () => {
   localStorage.setItem('pbs_sheet_endpoint', $('scriptUrl').value.trim());
 });
