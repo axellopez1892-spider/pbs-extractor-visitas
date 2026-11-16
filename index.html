@@ -191,6 +191,28 @@ function getField(text,labels,next){
   for(const label of labels){const v=valueAfter(text,label,next);if(v)return v;}
   return '';
 }
+// Los comentarios pueden ocupar varias líneas en la captura. Se conserva
+// todo el texto posterior al rótulo hasta encontrar el siguiente apartado.
+function getFullComments(text){
+  const lines=text.split(/\r?\n/).map(line=>line.replace(/[ \t]+/g,' ').trim());
+  const labelRe=/^Comentarios?\s*(?:\/|y)?\s*(?:Observaciones)?\s*[:：]?\s*(.*)$/i;
+  const alternateRe=/^Observaciones\s*[:：]?\s*(.*)$/i;
+  const stopRe=/^(?:Intervalo de tiempo|Inicio|Fin|Duraci[oó]n|Fecha de (?:creaci[oó]n|actualizaci[oó]n)|Creado por|Actualizado por|Historial(?: de actividad)?|Archivos? adjuntos|Adjuntos|Evidencias?|Fotos?|Documentos?|Tipo de actividad|Motivo(?: de actividad| Informaci[oó]n)?|Estado de actividad)\s*[:：]?/i;
+  for(let i=0;i<lines.length;i++){
+    const match=lines[i].match(labelRe)||lines[i].match(alternateRe);
+    if(!match) continue;
+    const collected=[];
+    if(match[1]) collected.push(match[1]);
+    for(let j=i+1;j<lines.length;j++){
+      const line=lines[j];
+      if(!line) continue;
+      if(stopRe.test(line)) break;
+      collected.push(line);
+    }
+    return collected.join(' ').replace(/\s+/g,' ').trim();
+  }
+  return '';
+}
 function extractHeader(text){
   const lines=text.split('\n').map(norm).filter(Boolean);
   // Reconoce rutas como C1, C18, C 18, PRO1, etc., seguidas del nombre del ejecutivo.
@@ -211,7 +233,7 @@ function parseOCR(text,file){
   const type=getField(text,['Tipo de actividad'],['Motivo Información','Estado de actividad','Intervalo de tiempo']);
   const reason=getField(text,['Motivo Información','Motivo de actividad'],['Estado de actividad','Intervalo de tiempo','Inicio','Duración','Comentarios']);
   const status=getField(text,['Estado de actividad'],['Intervalo de tiempo','Inicio','Duración','Comentarios']);
-  const comments=getField(text,['Comentarios / Observaciones','Comentarios','Observaciones'],[]);
+  const comments=getFullComments(text);
   const route=header.route||$('defaultRoute').value.trim();
   const person=header.person||$('defaultPerson').value.trim();
   return {date,time,route,person,client,address,order,type,reason,status,comments,filename:file.name,imageURL:URL.createObjectURL(file),raw:text};
