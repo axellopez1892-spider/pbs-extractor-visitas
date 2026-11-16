@@ -214,11 +214,19 @@ function getFullComments(text){
   return '';
 }
 function extractHeader(text){
-  const lines=text.split('\n').map(norm).filter(Boolean);
-  // Reconoce rutas como C1, C18, C 18, PRO1, etc., seguidas del nombre del ejecutivo.
-  for(const line of lines.slice(0,10)){
-    const m=line.match(/^\(?\s*([A-Z]{1,4}\s*\d{1,3})\s*\)?[\s-]+([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑa-záéíóúñ .'-]{2,})$/i);
-    if(m && !/Detalles de actividad/i.test(line)) return {route:m[1].replace(/\s+/g,'').toUpperCase(),person:m[2].trim()};
+  const lines=text.split(/\r?\n/).map(norm).filter(Boolean);
+  // El encabezado de la aplicación suele verse como: (C 22) Aldo Renato Bejarano, 11/16...
+  // Se elimina la fecha y otros datos que aparecen después de una coma antes de separar ruta y ejecutivo.
+  for(const original of lines.slice(0,12)){
+    if(/Detalles de actividad/i.test(original)) continue;
+    let line=original.replace(/[.…]+$/g,'').trim();
+    line=line.replace(/\s*,\s*(?:\d{1,2}\s*[\/-]\s*\d{1,2}.*|hoy.*|ayer.*)$/i,'').trim();
+    line=line.replace(/\s*\(\s*\d{1,2}\s*[\/-]\s*\d{1,2}[^)]*\)?\s*$/,'').trim();
+    const m=line.match(/^\(?\s*([A-Z]{1,4}\s*\d{1,3})\s*\)?\s*[-–:]?\s+([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑa-záéíóúñ .'-]{2,}?)\s*$/i);
+    if(m){
+      const person=m[2].replace(/[,.\s]+$/,'').trim();
+      if(person && /[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(person)) return {route:m[1].replace(/\s+/g,'').toUpperCase(),person};
+    }
   }
   return {route:'',person:''};
 }
