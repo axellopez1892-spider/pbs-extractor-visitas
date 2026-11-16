@@ -5,44 +5,110 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Extractor de registros BAC / PBS</title>
 <style>
-:root{--navy:#12345a;--blue:#1769aa;--bg:#f3f6fa;--line:#dce3eb;--text:#1f2937}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
-header{background:linear-gradient(120deg,#102b4c,#1769aa);color:white;padding:24px 5%;box-shadow:0 3px 12px #0002}
-header h1{margin:0 0 7px;font-size:24px}header p{margin:0;color:#e5eff9}
-main{max-width:1450px;margin:24px auto;padding:0 18px}
-.card{background:white;border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 2px 8px #142b4610}
-h2{font-size:18px;margin:0 0 14px;color:var(--navy)}
-.note{font-size:13px;color:#536273;line-height:1.5}
-.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-input[type=file]{max-width:100%;padding:10px;border:1px dashed #9aabba;border-radius:8px;background:#f8fafc}
-button{border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer}
-.primary{background:var(--blue);color:white}.success{background:#13804a;color:white}.secondary{background:#e8eef5;color:#20364c}
-button:disabled{opacity:.5;cursor:not-allowed}
-.progress{height:9px;background:#e7edf3;border-radius:20px;overflow:hidden;margin-top:12px}.bar{height:100%;width:0;background:#1683c7;transition:width .2s}
-#status{font-size:13px;color:#44566a;margin-top:9px}
-.defaults{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
-label{display:block;font-size:12px;font-weight:bold;color:#536273;margin-bottom:5px}
-input[type=text],textarea{width:100%;border:1px solid #cbd5df;border-radius:7px;padding:9px;font:14px Arial}
-.table-wrap{overflow:auto}
-table{border-collapse:collapse;width:100%;min-width:1250px;font-size:13px}
-th{background:#eaf1f8;color:#173b60;text-align:left;position:sticky;top:0}
-th,td{border:1px solid #dce3eb;padding:7px;vertical-align:top}
-td input,td textarea{min-width:100px;border:1px solid #d7dee7;padding:7px;font:13px Arial}
-td textarea{min-width:190px;min-height:58px;resize:vertical}
-.thumb{width:66px;height:66px;object-fit:cover;border-radius:5px}
+
+:root{
+  --navy:#102f55;--blue:#0868c9;--blue2:#0d83e8;--sky:#eaf4ff;
+  --bg:#f2f6fb;--line:#d9e4ef;--text:#172b45;--muted:#60738a;
+  --green:#16834a;--green-bg:#e5f7ed;--shadow:0 5px 18px rgba(16,47,85,.08)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+header{
+  background:linear-gradient(125deg,#0b2b50 0%,#075da9 68%,#0b83d7 100%);
+  color:#fff;padding:22px max(5%,calc((100% - 1250px)/2));
+  box-shadow:0 4px 16px #102f5528;position:relative;overflow:hidden
+}
+header:after{content:"";position:absolute;width:280px;height:280px;border:35px solid #ffffff12;border-radius:50%;right:-85px;top:-145px}
+.brand{display:flex;align-items:center;gap:13px;position:relative;z-index:1}
+.brand-mark{width:52px;height:52px;border:2px solid #ffffffa8;border-radius:14px;display:grid;place-items:center;font-size:25px;font-weight:900;font-style:italic;letter-spacing:-2px;background:#ffffff12}
+.brand-name{font-size:28px;line-height:1;font-weight:900;font-style:italic;letter-spacing:-1px}
+.brand-sub{font-size:12px;font-weight:700;letter-spacing:1.6px;margin-top:4px;color:#d9edff}
+.header-copy{position:relative;z-index:1;margin-top:16px}
+header h1{font-size:22px;margin:0 0 5px}
+header p{margin:0;color:#e5f2ff;font-size:14px;line-height:1.4}
+main{max-width:1250px;margin:22px auto;padding:0 18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:21px;margin-bottom:18px;box-shadow:var(--shadow)}
+h2{font-size:18px;margin:0 0 15px;color:var(--navy);display:flex;align-items:center;gap:9px}
+.step{width:27px;height:27px;border-radius:9px;background:var(--sky);color:var(--blue);display:inline-grid;place-items:center;font-size:14px;font-weight:800}
+.note{font-size:13px;color:var(--muted);line-height:1.55}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input[type=file]{max-width:100%;padding:12px;border:1px dashed #8fb6dc;border-radius:11px;background:#f7fbff;flex:1;min-width:240px}
+button{border:0;border-radius:10px;padding:12px 17px;font-weight:700;cursor:pointer;font-size:14px;transition:transform .12s,filter .12s}
+button:active{transform:scale(.98)}
+.primary{background:linear-gradient(120deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 3px 8px #0868c92b}
+.success{background:var(--green);color:white}.secondary{background:#eaf1f8;color:#24415f}
+button:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}
+.defaults{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:16px}
+label{display:block;font-size:12px;font-weight:bold;color:#536b84;margin-bottom:6px}
+input[type=text],textarea{width:100%;border:1px solid #cbd9e7;border-radius:9px;padding:11px;font:14px Arial;background:#fff;color:var(--text)}
+input[type=text]:focus,textarea:focus{outline:2px solid #b8dcff;border-color:var(--blue)}
+.config{margin-top:14px;border:1px solid #e1eaf3;border-radius:10px;padding:11px 13px;background:#f8fbfe}
+.config summary{font-size:13px;font-weight:700;color:#34516f;cursor:pointer}
+.config label{margin-top:12px}
+.progress{height:9px;background:#e7edf5;border-radius:20px;overflow:hidden;margin-top:13px}
+.bar{height:100%;width:0;background:linear-gradient(90deg,#0871d4,#24a0f0);transition:width .2s}
+#status{font-size:13px;color:#445d78;margin-top:10px;line-height:1.45}
 .actions{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}
-.small{font-size:12px;color:#64748b}
-@media(max-width:600px){header h1{font-size:20px}.card{padding:14px}}
+.small{font-size:12px;color:#647b94;line-height:1.45}
+.table-wrap{overflow:auto;border:1px solid #dce6f0;border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:1180px;font-size:13px}
+th{background:#edf5fc;color:#173b60;text-align:left;position:sticky;top:0}
+th,td{border:1px solid #dce6eb;padding:8px;vertical-align:top}
+td input,td textarea{min-width:100px;border:1px solid #d7e1eb;padding:8px;font:13px Arial}
+td textarea{min-width:190px;min-height:58px;resize:vertical}
+.thumb{width:66px;height:66px;object-fit:cover;border-radius:7px;border:1px solid #dce6ef}
+#sheetStatus{margin:0 0 12px;padding:9px 11px;border-radius:8px;background:#f3f8fd}
+@media(max-width:700px){
+  header{padding:17px 16px 19px}
+  .brand-mark{width:45px;height:45px;border-radius:12px;font-size:22px}
+  .brand-name{font-size:25px}
+  .header-copy{margin-top:13px}
+  header h1{font-size:19px}
+  header p{font-size:13px}
+  main{margin:13px auto;padding:0 11px}
+  .card{padding:15px;border-radius:14px;margin-bottom:13px}
+  h2{font-size:17px;margin-bottom:13px}
+  .controls{display:grid;grid-template-columns:1fr;gap:9px}
+  input[type=file]{width:100%;min-width:0;font-size:13px}
+  .controls button{width:100%;min-height:46px}
+  .defaults{grid-template-columns:1fr;gap:11px}
+  input[type=text],textarea{font-size:16px;padding:12px}
+  .actions{display:grid;grid-template-columns:1fr;gap:9px}
+  .actions button{width:100%;min-height:47px}
+  .table-wrap{overflow:visible;border:0}
+  table{min-width:0;width:100%;display:block;font-size:13px}
+  thead{display:none}
+  tbody{display:block;width:100%}
+  tbody tr{display:block;background:#fff;border:1px solid #dce6f0;border-radius:12px;margin:0 0 12px;padding:8px 11px;box-shadow:0 2px 8px #102f550d}
+  tbody td{display:grid;grid-template-columns:minmax(105px,34%) minmax(0,1fr);gap:9px;border:0;border-bottom:1px solid #edf1f5;padding:9px 2px;overflow-wrap:anywhere}
+  tbody td:last-child{border-bottom:0}
+  tbody td:before{content:attr(data-label);font-size:12px;font-weight:700;color:#536b84}
+  tbody td input,tbody td textarea{min-width:0;width:100%;font-size:14px;padding:9px}
+  tbody td textarea{min-height:76px}
+  tbody td img{max-width:100%}
+  .note{font-size:12px}
+}
+@media(max-width:380px){
+  tbody td{grid-template-columns:94px minmax(0,1fr);gap:6px}
+  .brand-name{font-size:23px}
+}
+
 </style>
 </head>
 <body>
 <header>
-  <h1>Extractor de registros de visitas</h1>
-  <p>Sube capturas de “Detalles de actividad” y organiza la información en Excel.</p>
+  <div class="brand">
+    <div class="brand-mark">PBS</div>
+    <div><div class="brand-name">PBS</div><div class="brand-sub">GUATEMALA</div></div>
+  </div>
+  <div class="header-copy">
+    <h1>Extractor de registros de visitas</h1>
+    <p>Sube capturas de “Detalles de actividad” y organiza la información automáticamente.</p>
+  </div>
 </header>
 <main>
   <section class="card">
-    <h2>1. Cargar imágenes</h2>
+    <h2><span class="step">1</span> Cargar imágenes</h2>
     <div class="controls">
       <input id="files" type="file" accept="image/*" multiple>
       <button class="primary" id="process">Leer imágenes</button>
@@ -52,18 +118,19 @@ td textarea{min-width:190px;min-height:58px;resize:vertical}
       <div><label>Ruta predeterminada (si no aparece en la captura)</label><input id="defaultRoute" type="text" placeholder="Ej. C 18"></div>
       <div><label>Persona predeterminada (si no aparece en la captura)</label><input id="defaultPerson" type="text" placeholder="Ej. Erick Haroldo Zelaya"></div>
     </div>
-    <div style="margin-top:14px">
+    <details class="config">
+      <summary>Configuración de conexión con Google Sheets</summary>
       <label>Dirección de la aplicación web de Google Apps Script</label>
-      <input id="scriptUrl" type="text" placeholder="Pega aquí la URL que termina en /exec">
-      <p class="small">Este enlace conecta la herramienta con la hoja de Google Sheets. Se guarda en este navegador.</p>
-    </div>
+      <input id="scriptUrl" type="text" placeholder="URL que termina en /exec">
+      <p class="small">Este enlace conecta la herramienta con Google Sheets. Se guarda en este navegador.</p>
+    </details>
     <p class="note">La fecha y hora de registro se asignan automáticamente al momento de cargar cada imagen en esta herramienta. La ruta y el nombre de la persona se intentan leer del encabezado superior; si no aparece o el reconocimiento falla, puedes completarlos manualmente en la tabla.</p>
     <div class="progress"><div class="bar" id="bar"></div></div>
     <div id="status">Listo para cargar imágenes. Para reconocer texto se necesita conexión a internet la primera vez.</div>
   </section>
 
   <section class="card">
-    <h2>2. Revisar y corregir información</h2>
+    <h2><span class="step">2</span> Revisar y corregir información</h2>
     <div class="actions">
       <button class="success" id="export" disabled>Exportar a Excel (.xlsx)</button>
       <button class="secondary" id="csv" disabled>Exportar a CSV</button>
@@ -83,7 +150,7 @@ td textarea{min-width:190px;min-height:58px;resize:vertical}
     </div>
   </section>
   <section class="card">
-    <h2>Importante sobre el reconocimiento</h2>
+    <h2><span class="step">i</span> Importante sobre el reconocimiento</h2>
     <p class="note">El sistema utiliza OCR para leer el texto de las capturas. La calidad, el recorte y el tamaño de letra pueden afectar los resultados. Los datos reconocidos deben revisarse, especialmente números de cuenta, órdenes de trabajo y comentarios. Las imágenes se procesan en el navegador; a Google Sheets se envían los datos extraídos, no las fotografías.</p>
   </section>
 </main>
@@ -143,7 +210,8 @@ function addRow(r){
   if(idx===0)$('rows').innerHTML='';
   const tr=document.createElement('tr');
   const fields=['date','time','routePerson','client','address','order','type','reason','status','comments'];
-  tr.innerHTML='<td>'+(idx+1)+'</td>'+fields.map((f,i)=>'<td>'+(f==='comments'?'<textarea data-i="'+idx+'" data-f="'+f+'"></textarea>':'<input type="text" data-i="'+idx+'" data-f="'+f+'">')+'</td>')+'<td><img class="thumb" src="'+r.imageURL+'" title="'+escapeHtml(r.filename)+'"><div class="small">'+escapeHtml(r.filename)+'</div></td>';
+  const labels=['#','Fecha de carga','Hora de carga','Ruta / persona','Nombre del cliente','Dirección','Orden de trabajo','Tipo de actividad','Motivo de actividad','Estado','Comentarios / observaciones'];
+  tr.innerHTML='<td data-label="#">'+(idx+1)+'</td>'+fields.map((f,i)=>'<td data-label="'+labels[i+1]+'">'+(f==='comments'?'<textarea data-i="'+idx+'" data-f="'+f+'"></textarea>':'<input type="text" data-i="'+idx+'" data-f="'+f+'">')+'</td>')+'<td data-label="Imagen"><div><img class="thumb" src="'+r.imageURL+'" title="'+escapeHtml(r.filename)+'"><div class="small">'+escapeHtml(r.filename)+'</div></div></td>';
   $('rows').appendChild(tr);
   tr.querySelectorAll('[data-f]').forEach(el=>{el.value=r[el.dataset.f]||'';el.addEventListener('input',()=>records[Number(el.dataset.i)][el.dataset.f]=el.value);});
   $('export').disabled=false;$('csv').disabled=false;$('sendSheet').disabled=false;
